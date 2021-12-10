@@ -1,9 +1,10 @@
 
 // Classes
 class priorityQueue {
-    constructor() {
+    constructor(comparator) {
         this.queue = [-1];
         this.index = 1;
+        this.comparator = comparator;
     }
     enqueueElement(element) {
         this.queue[this.index] = element;
@@ -11,12 +12,12 @@ class priorityQueue {
         this.index++;
     }
     swim(index) {
-        if (index = 1) {
+        if (index === 1) {
             return;
         }
         let indexHeap = Math.floor(index/2);
-        if (this.queue[index].distance < this.queue[indexHeap].distance) {
-            swap(index, indexHeap);
+        if (this.comparator(this.queue[index], this.queue[indexHeap]) === -1) {
+            this.swap(index, indexHeap);
             this.swim(indexHeap);
         }
         return;
@@ -30,23 +31,24 @@ class priorityQueue {
         return this.queue[1];
     }
     dequeue() {
-        if (this.index == 1) {
+        if (this.index === 1) {
             alert("Something went wrong!");
         }
         this.index--;
         this.swap(this.index, 1);
         this.sink(1);
         return this.queue[this.index];
+
     }
     sink(index) {
         let leftChild = 2 * index;
         let rightChild = 2 * index + 1;
-        if (leftChild <= this.index) {
-            if (this.queue[leftChild].distance < this.queue[index].distance) {
+        if (leftChild < this.index) {
+            if (this.comparator(this.queue[index], this.queue[leftChild]) === 1) {
                 this.swap(index, leftChild);
                 this.sink(leftChild);
             }
-            else if (rightChild <= this.index && this.queue[rightChild].distance < this.queue[index].distance) {
+            else if (rightChild < this.index && this.comparator(this.queue[index], this.queue[rightChild] === 1)) {
                 this.swap(index, rightChild);
                 this.sink(rightChild);
             }
@@ -70,8 +72,8 @@ let line;
 let hasBeginningNode = false;
 let hasTargetNode = false;
 const graphArray = [];
-let beginningi, beginningj; // the beginning node and it's coordinates
-let targeti, targetj; // the target node and it's coordinates
+let beginningNode; // the beginning node and it's coordinates
+let targetNode; // the target node and it's coordinates
 
 
 // Build the html graph and the two dimensional graphArray
@@ -88,18 +90,16 @@ for (let i = 0; i < rows; i++) {
         // A root node is either a target node or the beginning node
         node.addEventListener('click', () => {
             // this will execute if the beginning node has been selected
-            if (hasBeginningNode && !(beginningi === i && beginningj === j) && !hasTargetNode) { 
-                targeti = i;
-                targetj = j;
+            if (hasBeginningNode && !(beginningNode.i === i && beginningNode.j === j) && !hasTargetNode) { 
+                targetNode = node;
                 node.setAttribute("id", "targetNode");
                 hasTargetNode = true;
             }
     // this will execute if the beginning node has not been selected
             else if (!hasTargetNode){
-                hasBeginningNode = true;
-                beginningi = i;
-                beginningj = j;
+                beginningNode = node;
                 node.setAttribute("id", "beginningNode");
+                hasBeginningNode = true;
             }
                 })
         node.setAttribute("class", "node");
@@ -108,59 +108,87 @@ for (let i = 0; i < rows; i++) {
     }
     graphElement.appendChild(line);
 }
-const dijkstrasButton = document.createElement("button");
-dijkstrasButton.addEventListener("click", dijkstrasAlgorithm);
-document.querySelector("body").appendChild(dijkstrasButton);
+document.getElementById("dijkstrasAlgorithm").addEventListener("click", dijkstrasAlgorithm);
 
+function dijkstrasComparator(node1, node2) {
+    if (node1.distance > node2.distance) {
+        return 1;
+    }
+    else if (node1.distance === node2.distance) {
+        return 0;
+    }
+    else {
+        return -1;
+    }
+}
 function dijkstrasAlgorithm() {
-    const dijkstrasPQ = new priorityQueue();
-    graphArray[beginningi][beginningj].distance = 0;
+    const dijkstrasPQ = new priorityQueue(dijkstrasComparator);
     if (!hasBeginningNode || !hasTargetNode) {
         return;
     }
-    startArray = getDijkstrasNeighbors(beginningi, beginningj);
+    beginningNode.distance = 0;
+    startArray = getDijkstrasNeighbors(beginningNode.i, beginningNode.j);
+    console.log(startArray);
     for (let i = 0; i < startArray.length; i++) {
-        dijkstrasPQ.enqueueElement(graph[startArray[i][0]][startArray[i][1]]);
+        dijkstrasPQ.enqueueElement(graphArray[startArray[i][0]][startArray[i][1]]);
     }
+    console.log("THE WHILE LOOP BEGAN");
     while (!dijkstrasPQ.isEmpty()) {
         let currentNode = dijkstrasPQ.dequeue();
-        if (currentNode.i == targeti && currentNode.j == targetj) {
+        if (currentNode.i == targetNode.i && currentNode.j == targetNode.j) {
             break;
         }
-        let currenArray =  getDijkstrasNeighbors(currentNode.i, currentNode.j);
-        for (let i = 0; i < currenArray.length; i++) {
-            dijkstrasPQ.enqueueElement(graph[startArray[i][0]][startArray[i][1]]);
+        let currentArray =  getDijkstrasNeighbors(currentNode.i, currentNode.j);
+        console.log(currentArray);
+        for (let i = 0; i < currentArray.length; i++) {
+            dijkstrasPQ.enqueueElement(graphArray[currentArray[i][0]][currentArray[i][1]]);
         } 
+    }
+    if (targetNode.className.includes("searched")) {
+        let node = targetNode;
+        while (node !== beginningNode) {
+            node.classList.add("path");
+            node = node.from;
+            setTimeout(() => {node.classList.add("path")}, 1000);
+        }
+    }
+    else {
+        console.log("Couldn't find")
     }
 }
 
 
 function getDijkstrasNeighbors(i, j) {
+    console.log(i + ", " + j + " entered the neighbors function");
     let neighbors = [];
-    let currentNode = graphArray[i][j];
-    if (i + 1 >= rows && graphArray[i + 1][j].distance > currentNode.distance + 1) {
+    const currentNode = graphArray[i][j];
+    if (i + 1 < rows && graphArray[i + 1][j].distance > currentNode.distance + 1) {
         let top = graphArray[i + 1][j];
         neighbors.push([i + 1, j]);
         top.from = currentNode;
-        top.className = (top.className.includes("searched"))? top.className: top.className + " searched";
+        top.distance = currentNode.distance + 1;
+        top.classList.add("searched");
     }
-    if (i - 1 <= -1 && graphArray[i - 1][j].distance > currentNode.distance + 1) {
+    if (i - 1 > -1 && graphArray[i - 1][j].distance > currentNode.distance + 1) {
         let bottom = graphArray[i - 1][j]
         neighbors.push([i - 1, j]);
         bottom.from = currentNode;
-        bottom.className = (bottom.className.includes("searched"))? bottom.className: bottom.className + " searched";
+        bottom.distance = currentNode.distance + 1;
+        bottom.classList.add("searched");
     }
-    if (j + 1 >= columns && graph[i][j + 1] > currentNode.distance + 1) {
-        let right = graphArray[i, j + 1];
+    if (j + 1 < columns && graphArray[i][j + 1].distance > currentNode.distance + 1) {
+        let right = graphArray[i][j + 1];
         neighbors.push([i, j + 1]);
         right.from = currentNode;
-        right.className = (right.className.includes("searched"))? right.className: right.className + " searched";
+        right.distance = currentNode.distance + 1;
+        right.classList.add("searched");
     }
-    if (j - 1 <= -1 && graph[i][j - 1] > currentNode.distance + 1) {
-        let left = graphArray[i, j - 1];
+    if (j - 1 > -1 && graphArray[i][j - 1].distance > currentNode.distance + 1) {
+        let left = graphArray[i][j - 1];
         neighbors.push([i, j - 1]);
         left.from = currentNode;
-        left.className = (left.className.includes("searched"))? left.className: left.className + " searched";
+        left.distance = currentNode.distance + 1;
+        left.classList.add("searched");
     }
     return neighbors;
 }
