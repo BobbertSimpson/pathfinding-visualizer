@@ -30,3 +30,6 @@ html {
     display:block;
     height: 50px;
 }
+.searched {
+    background-color: purple;
+}
