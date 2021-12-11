@@ -1,114 +1,76 @@
-
-// Classes
-class priorityQueue {
-    constructor(comparator) {
-        this.queue = [-1];
-        this.index = 1;
-        this.comparator = comparator;
+// Add the needed properties for the node
+function constructNode(row, column) {
+    const node = document.createElement('td');
+    node.distance = Infinity;
+    node.row = row;
+    node.column = column;
+    node.setAttribute("class", "node");
+    if (row === beginningNodeRow && column === beginningNodeColumn) { 
+        makeBeginningNode(node);
     }
-    enqueueElement(element) {
-        this.queue[this.index] = element;
-        this.swim(this.index); // recursively return the array into heap order
-        this.index++;
+    else if (row === targetNodeRow && column === targetNodeColumn){
+        makeTargetNode(node);
     }
-    swim(index) {
-        if (index === 1) {
-            return;
-        }
-        let indexHeap = Math.floor(index/2);
-        if (this.comparator(this.queue[index], this.queue[indexHeap]) === -1) {
-            this.swap(index, indexHeap);
-            this.swim(indexHeap);
-        }
-        return;
-    }
-    swap(a, b) {
-        let temp = this.queue[a];
-        this.queue[a] = this.queue[b];
-        this.queue[b] = temp;
-    }
-    min() {
-        return this.queue[1];
-    }
-    dequeue() {
-        if (this.index === 1) {
-            alert("Something went wrong!");
-        }
-        this.index--;
-        this.swap(this.index, 1);
-        this.sink(1);
-        return this.queue[this.index];
-
-    }
-    sink(index) {
-        let leftChild = 2 * index;
-        let rightChild = 2 * index + 1;
-        if (leftChild < this.index) {
-            if (this.comparator(this.queue[index], this.queue[leftChild]) === 1) {
-                this.swap(index, leftChild);
-                this.sink(leftChild);
-            }
-            else if (rightChild < this.index && this.comparator(this.queue[index], this.queue[rightChild] === 1)) {
-                this.swap(index, rightChild);
-                this.sink(rightChild);
-            }
-        }
-        return;
-    }
-    isEmpty() {
-        return this.index == 1;
-    }
+    return node;
 }
-
-
-
-const rows = 10;
-const columns = 25;
-
+function makeTargetNode(node) {
+    targetNode = node;
+    node.id = "targetNode";
+}
+function makeBeginningNode(node) {
+    beginningNode = node;
+    beginningNode.id ="beginningNode";
+}
+function refreshGraph() {
+    for (let row = 0; row < numberOfRows; row++) {
+        for (let column = 0; column < numberOfColumns; column++) {
+            refreshNode(row, column);
+        }
+    }
+    alreadySearched = false;
+}
+// Reset the node to it's innitial state
+function refreshNode(row, column) {
+    let node = graphArray[row][column];
+    node.distance = Infinity;
+    node.from = undefined;
+    node.classList.remove("searched");
+    node.classList.remove("path");
+}
 // Arbitrary size of the graph
+const numberOfRows = 15;
+const numberOfColumns = 50;
+
+// original position of the beginning and end nodes
+let beginningNodeRow = Math.floor(numberOfRows/2);
+let beginningNodeColumn = Math.floor(numberOfColumns/6);
+let targetNodeColumn = Math.floor(numberOfColumns/6) * 5
+let targetNodeRow = Math.floor(numberOfRows/2);
 
 const graphElement = document.getElementById('graph');
-let line;
-let hasBeginningNode = false;
-let hasTargetNode = false;
 const graphArray = [];
-let beginningNode; // the beginning node and it's coordinates
-let targetNode; // the target node and it's coordinates
+let beginningNode;
+let targetNode;
+let alreadySearched = false; 
 
+// Activate the buttons
+document.getElementById("dijkstrasAlgorithm").addEventListener("click", dijkstrasAlgorithm);
+document.getElementById("breadthFirstSearch").addEventListener("click", breadthFirstSearch);
+document.getElementById("deapthFirstSearch").addEventListener("click", deapthFirstSearch);
+document.getElementById("reset").addEventListener("click", refreshGraph);
 
 // Build the html graph and the two dimensional graphArray
-for (let i = 0; i < rows; i++) {
-    line = document.createElement('div');
+for (let row = 0; row < numberOfRows; row++) {
+    line = document.createElement('tr');
     line.setAttribute("class", "line");
-    graphArray[i] = [];
-    for (let j = 0; j < columns; j++) {
-        const node = document.createElement('div');
-        // Adding values that are needed for the search algorithms
-        node.distance = Infinity;
-        node.i = i;
-        node.j = j;
-        // A root node is either a target node or the beginning node
-        node.addEventListener('click', () => {
-            // this will execute if the beginning node has been selected
-            if (hasBeginningNode && !(beginningNode.i === i && beginningNode.j === j) && !hasTargetNode) { 
-                targetNode = node;
-                node.setAttribute("id", "targetNode");
-                hasTargetNode = true;
-            }
-    // this will execute if the beginning node has not been selected
-            else if (!hasTargetNode){
-                beginningNode = node;
-                node.setAttribute("id", "beginningNode");
-                hasBeginningNode = true;
-            }
-                })
-        node.setAttribute("class", "node");
-        graphArray[i][j] = node;
+    graphArray[row] = [];
+    for (let column = 0; column < numberOfColumns; column++) {
+        const node = constructNode(row, column);
+        graphArray[row][column] = node;
         line.appendChild(node);
     }
     graphElement.appendChild(line);
 }
-document.getElementById("dijkstrasAlgorithm").addEventListener("click", dijkstrasAlgorithm);
 
 function dijkstrasComparator(node1, node2) {
     if (node1.distance > node2.distance) {
@@ -122,28 +84,33 @@ function dijkstrasComparator(node1, node2) {
     }
 }
 function dijkstrasAlgorithm() {
-    const dijkstrasPQ = new priorityQueue(dijkstrasComparator);
-    if (!hasBeginningNode || !hasTargetNode) {
+    if (alreadySearched) {
         return;
     }
+    const dijkstrasPQ = new minPriorityQueue(dijkstrasComparator);
     beginningNode.distance = 0;
-    startArray = getDijkstrasNeighbors(beginningNode.i, beginningNode.j);
+    startArray = getDijkstrasNeighbors(beginningNode.row, beginningNode.column);
     console.log(startArray);
     for (let i = 0; i < startArray.length; i++) {
-        dijkstrasPQ.enqueueElement(graphArray[startArray[i][0]][startArray[i][1]]);
+        dijkstrasPQ.enqueueElement(startArray[i]);
     }
+
     console.log("THE WHILE LOOP BEGAN");
     while (!dijkstrasPQ.isEmpty()) {
         let currentNode = dijkstrasPQ.dequeue();
-        if (currentNode.i == targetNode.i && currentNode.j == targetNode.j) {
+        if (currentNode === targetNode) {
             break;
         }
-        let currentArray =  getDijkstrasNeighbors(currentNode.i, currentNode.j);
+        let currentArray =  getDijkstrasNeighbors(currentNode.row, currentNode.column);
         console.log(currentArray);
         for (let i = 0; i < currentArray.length; i++) {
-            dijkstrasPQ.enqueueElement(graphArray[currentArray[i][0]][currentArray[i][1]]);
+            dijkstrasPQ.enqueueElement(currentArray[i]);
         } 
     }
+    showAnswer();
+    alreadySearched = true;
+}
+function showAnswer() {
     if (targetNode.className.includes("searched")) {
         let node = targetNode;
         while (node !== beginningNode) {
@@ -156,38 +123,99 @@ function dijkstrasAlgorithm() {
         console.log("Couldn't find")
     }
 }
-
-
-function getDijkstrasNeighbors(i, j) {
-    console.log(i + ", " + j + " entered the neighbors function");
+function getDijkstrasNeighbors(row, column) {
     let neighbors = [];
-    const currentNode = graphArray[i][j];
-    if (i + 1 < rows && graphArray[i + 1][j].distance > currentNode.distance + 1) {
-        let top = graphArray[i + 1][j];
-        neighbors.push([i + 1, j]);
+    const currentNode = graphArray[row][column];
+    if (row + 1 < numberOfRows && graphArray[row + 1][column].distance > currentNode.distance + 1) {
+        let top = graphArray[row + 1][column];
+        neighbors.push(top);
         top.from = currentNode;
         top.distance = currentNode.distance + 1;
         top.classList.add("searched");
     }
-    if (i - 1 > -1 && graphArray[i - 1][j].distance > currentNode.distance + 1) {
-        let bottom = graphArray[i - 1][j]
-        neighbors.push([i - 1, j]);
+    if (row - 1 > -1 && graphArray[row - 1][column].distance > currentNode.distance + 1) {
+        let bottom = graphArray[row - 1][column];
+        neighbors.push(bottom);
         bottom.from = currentNode;
         bottom.distance = currentNode.distance + 1;
         bottom.classList.add("searched");
     }
-    if (j + 1 < columns && graphArray[i][j + 1].distance > currentNode.distance + 1) {
-        let right = graphArray[i][j + 1];
-        neighbors.push([i, j + 1]);
+    if (column + 1 < numberOfColumns && graphArray[row][column + 1].distance > currentNode.distance + 1) {
+        let right = graphArray[row][column + 1];
+        neighbors.push(right);
         right.from = currentNode;
         right.distance = currentNode.distance + 1;
         right.classList.add("searched");
     }
-    if (j - 1 > -1 && graphArray[i][j - 1].distance > currentNode.distance + 1) {
-        let left = graphArray[i][j - 1];
-        neighbors.push([i, j - 1]);
+    if (column - 1 > -1 && graphArray[row][column - 1].distance > currentNode.distance + 1) {
+        let left = graphArray[row][column - 1];
+        neighbors.push(left);
         left.from = currentNode;
         left.distance = currentNode.distance + 1;
+        left.classList.add("searched");
+    }
+    return neighbors;
+}
+
+function breadthFirstSearch() {
+    if (alreadySearched) {
+        return;
+    }
+    const queue = getNeighbors(beginningNode.row, beginningNode.column);
+    while (queue.length !== 0) {
+        let currentNode = queue.shift();
+        if (currentNode === targetNode) {break;}
+        let currentArray = getNeighbors(currentNode.row, currentNode.column);
+        for (let i = 0; i < currentArray.length; i++) {
+            queue.push(currentArray[i]);
+        }
+    }
+    showAnswer();
+    alreadySearched = true;
+}
+
+function deapthFirstSearch() {
+    if (alreadySearched) {
+        return;
+    }
+    const stack = getNeighbors(beginningNode.row, beginningNode.column);
+    while (stack.length !== 0) {
+        let currentNode = stack.pop();
+        if (currentNode === targetNode) {break;}
+        let currentArray = getNeighbors(currentNode.row, currentNode.column);
+        for (let i = 0; i < currentArray.length; i++) {
+            stack.push(currentArray[i]);
+        }
+    }
+    showAnswer();
+    alreadySearched = true;
+}
+
+function getNeighbors(row, column) {
+    let neighbors = [];
+    let currentNode = graphArray[row][column];
+    if (row - 1 > -1 && !graphArray[row - 1][column].className.includes("searched")) {
+        let bottom = graphArray[row - 1][column];
+        neighbors.push(bottom);
+        bottom.from = currentNode;
+        bottom.classList.add("searched");
+    }
+    if (column + 1 < numberOfColumns && !graphArray[row][column + 1].className.includes("searched")) {
+        let right = graphArray[row][column + 1];
+        neighbors.push(right);
+        right.from = currentNode;
+        right.classList.add("searched");
+    }
+    if (row + 1 < numberOfRows && !graphArray[row + 1][column].className.includes("searched")) {
+        let top = graphArray[row + 1][column];
+        neighbors.push(top);
+        top.from = currentNode;
+        top.classList.add("searched");
+    }
+    if (column - 1 > -1 && !graphArray[row][column - 1].className.includes("searched")) {
+        let left = graphArray[row][column - 1];
+        neighbors.push(left);
+        left.from = currentNode;
         left.classList.add("searched");
     }
     return neighbors;
