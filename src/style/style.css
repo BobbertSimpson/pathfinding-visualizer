@@ -19,15 +19,8 @@ body {
   padding: 0;
   border-spacing: 0;
 }
-
-.node:hover {
-  -ms-transform: scale(1.1);
-  -webkit-transform: scale(1.1);
-  transform: scale(1.1);
-}
 #beginningNode {
-  background-color: rgb(9, 82, 9);
-  border-radius: 75%;
+  background-color: green;
 }
 #targetNode {
   background-color: red;
@@ -42,10 +35,13 @@ body {
   width: 100%;
 }
 .searched {
-  background-color: purple;
+  background-color: lightblue;
 }
 .path {
   background-color: yellow;
+}
+.wall {
+  background-color: rgb(31, 31, 73);
 }
 nav {
   height: 60px;
@@ -82,7 +78,7 @@ nav ul li ul li a {
   font-size: 14px;
 }
 nav ul li ul li:hover a {
-  background-color: purple;
+  background-color: #f3f3f3;
 }
 #title {
   font-size: 28px;

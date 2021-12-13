@@ -4,9 +4,21 @@
     <header>
       <meta charset="utf-8" />
       <title>Pathfinding Visualizer</title>
-      <script type="text/javascript" src="datastructures.js" defer></script>
-      <script type="text/javascript" src="script.js" defer></script>
-      <link rel="stylesheet" type="text/css" href="style.css" />
+      <script
+        type="text/javascript"
+        src="src/js/handlingEvents.js"
+        defer
+      ></script>
+      <script
+        type="text/javascript"
+        src="src/js/minPriorityQueue.js"
+        defer
+      ></script>
+      <script type="text/javascript" src="src/js/dijkstra.js" defer></script>
+      <script type="text/javascript" src="src/js/dfs-bfs.js" defer></script>
+      <script type="text/javascript" src="src/js/aStar.js" defer></script>
+      <script type="text/javascript" src="src/js/createGraph.js" defer></script>
+      <link rel="stylesheet" type="text/css" href="src/style/style.css" />
     </header>
   </head>
   <body>
@@ -26,7 +38,8 @@
           </ul>
         </li>
         <li><a href="#">Maze Algorithms</a></li>
-        <li id="reset"><a href="#">Reset</a></li>
+        <li id="resetGraph"><a href="#">Clear Path</a></li>
+        <li id="resetWalls"><a href="#">Clear Walls</a></li>
       </ul>
     </nav>
     <div><table id="graph"></table></div>
