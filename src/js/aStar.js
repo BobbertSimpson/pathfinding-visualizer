@@ -54,6 +54,6 @@ function getManhattanDistanceTo(node) {
 // finds the euclidean distance
 function getEuclidDistanceTo(node) {
   return Math.sqrt(
-    (node.row - targetNodeRow) ** 2 + (node.column - targetNode.column) ** 2
+    (node.row - targetNode.row) ** 2 + (node.column - targetNode.column) ** 2
   );
 }

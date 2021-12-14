@@ -1,5 +1,8 @@
 // implementation of dijkstras' algorithm
-function dijkstrasAlgorithm(comparator) {
+function dijkstrasAlgorithm(comparator = dijkstrasComparator) {
+  if (timeoutArray.length > 0) {
+    stopAnimation();
+  }
   if (alreadySearched) {
     refreshGraph();
   }
@@ -13,6 +16,7 @@ function dijkstrasAlgorithm(comparator) {
 
   while (!dijkstrasPQ.isEmpty()) {
     let currentNode = dijkstrasPQ.dequeue();
+    currentNode.classList.add("beenThere");
     if (currentNode === targetNode) {
       break;
     }
@@ -24,7 +28,6 @@ function dijkstrasAlgorithm(comparator) {
       dijkstrasPQ.enqueueElement(currentArray[i]);
     }
   }
-  showAnswer();
   alreadySearched = true;
   lastSearchAlgorithm = comparator("type");
 }

@@ -1,12 +1,12 @@
 // Arbitrary size of the graph
-const numberOfRows = 15;
+const numberOfRows = 23;
 const numberOfColumns = 50;
 
 // original position of the beginning and end nodes
-let beginningNodeRow = Math.floor(numberOfRows / 2);
+let beginningNodeRow = Math.floor(numberOfRows / 3);
 let beginningNodeColumn = Math.floor(numberOfColumns / 6);
 let targetNodeColumn = Math.floor(numberOfColumns / 6) * 5;
-let targetNodeRow = Math.floor(numberOfRows / 2);
+let targetNodeRow = Math.floor(numberOfRows / 3) * 2;
 
 const graphElement = document.getElementById("graph");
 const graphArray = [];
@@ -14,29 +14,34 @@ let beginningNode;
 let targetNode;
 let alreadySearched = false;
 let lastSearchAlgorithm = "";
-w;
+let timeoutArray = [];
+const distanceElement = document.getElementById("distance");
 
-let movingBeginningNode = false;
-let movingTargetNode = false;
-let creatingWalls = false;
 // Activate the buttons
 document.getElementById("dijkstrasAlgorithm").addEventListener("click", () => {
-  dijkstrasAlgorithm(dijkstrasComparator);
+  dijkstrasAlgorithm();
+  showAnswerAnimate();
 });
-document
-  .getElementById("breadthFirstSearch")
-  .addEventListener("click", breadthFirstSearch);
-document
-  .getElementById("deapthFirstSearch")
-  .addEventListener("click", deapthFirstSearch);
+document.getElementById("breadthFirstSearch").addEventListener("click", () => {
+  breadthFirstSearch();
+  showAnswerAnimate();
+});
+document.getElementById("depthFirstSearch").addEventListener("click", () => {
+  depthFirstSearch();
+  showAnswerAnimate();
+});
 document.getElementById("resetGraph").addEventListener("click", refreshGraph);
 document.getElementById("resetWalls").addEventListener("click", () => {
   refreshGraph(true);
 });
-document.getElementById("aStarEuclid").addEventListener("click", aStarEuclid);
-document
-  .getElementById("aStarManhattan")
-  .addEventListener("click", aStarManhattan);
+document.getElementById("aStarEuclid").addEventListener("click", () => {
+  aStarEuclid();
+  showAnswerAnimate();
+});
+document.getElementById("aStarManhattan").addEventListener("click", () => {
+  aStarManhattan();
+  showAnswerAnimate();
+});
 
 // Build the html graph and the two dimensional graphArray
 for (let row = 0; row < numberOfRows; row++) {
@@ -60,7 +65,6 @@ function makeBeginningNode(node) {
   beginningNode.id = "beginningNode";
 }
 function refreshGraph(removeWalls = false) {
-  console.log(removeWalls);
   for (let row = 0; row < numberOfRows; row++) {
     for (let column = 0; column < numberOfColumns; column++) {
       refreshNode(row, column, removeWalls);
@@ -78,6 +82,8 @@ function refreshNode(row, column, removeWalls) {
   node.from = undefined;
   node.classList.remove("searched");
   node.classList.remove("path");
+  node.classList.remove("beenThere");
+  node.classList.remove("pathAnimate");
   if (removeWalls) {
     node.isWall = false;
     node.classList.remove("wall");
@@ -106,17 +112,45 @@ function constructNode(row, column) {
 }
 
 // shows the result of the search
-function showAnswer() {
+function showAnswerImmediate() {
+  let node = targetNode.from;
+  let distance = 0;
+  while (node !== beginningNode) {
+    node.classList.add("path");
+    distance += node.weight;
+    node = node.from;
+  }
+  distanceElement.textContent = distance;
+  // resetting the distance to zero
+  distance = 0;
+}
+
+function showAnswerAnimate() {
   if (targetNode.className.includes("searched")) {
-    let node = targetNode;
+    let node = targetNode.from;
+    let stack = [];
     while (node !== beginningNode) {
-      node.classList.add("path");
+      stack.push(node);
       node = node.from;
-      setTimeout(() => {
-        node.classList.add("path");
-      }, 1000);
     }
+    timeoutArray.push(setTimeout(animateStep, 75, stack));
+    // resetting the distance to zero
+    distance = 0;
   } else {
     return;
+  }
+}
+let counter = 0;
+function animateStep(stack, distance = 0) {
+  if (stack.length == 0) {
+    console.log(counter);
+    counter += 1;
+    return;
+  } else {
+    let node = stack.pop();
+    distance += node.weight;
+    node.classList.add("pathAnimate");
+    distanceElement.textContent = distance;
+    timeoutArray.push(setTimeout(animateStep, 75, stack, distance));
   }
 }

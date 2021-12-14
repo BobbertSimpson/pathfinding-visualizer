@@ -1,11 +1,18 @@
 // implementation of bfs
 function breadthFirstSearch() {
+  if (timeoutArray.length > 0) {
+    stopAnimation();
+  }
   if (alreadySearched) {
     refreshGraph();
   }
   const queue = getNeighbors(beginningNode.row, beginningNode.column);
   while (queue.length !== 0) {
     let currentNode = queue.shift();
+    if (currentNode.className.includes("beenThere")) {
+      continue;
+    }
+    currentNode.classList.add("beenThere");
     if (currentNode === targetNode) {
       break;
     }
@@ -14,18 +21,24 @@ function breadthFirstSearch() {
       queue.push(currentArray[i]);
     }
   }
-  showAnswer();
   alreadySearched = true;
   lastSearchAlgorithm = "bfs";
 }
 // implementation of dfs
-function deapthFirstSearch() {
+function depthFirstSearch() {
+  if (timeoutArray.length > 0) {
+    stopAnimation();
+  }
   if (alreadySearched) {
     refreshGraph();
   }
   const stack = getNeighbors(beginningNode.row, beginningNode.column);
   while (stack.length !== 0) {
     let currentNode = stack.pop();
+    if (currentNode.className.includes("beenThere")) {
+      continue;
+    }
+    currentNode.classList.add("beenThere");
     if (currentNode === targetNode) {
       break;
     }
@@ -34,7 +47,6 @@ function deapthFirstSearch() {
       stack.push(currentArray[i]);
     }
   }
-  showAnswer();
   alreadySearched = true;
   lastSearchAlgorithm = "dfs";
 }
@@ -44,7 +56,7 @@ function getNeighbors(row, column) {
   let currentNode = graphArray[row][column];
   if (
     row - 1 > -1 &&
-    !graphArray[row - 1][column].className.includes("searched") &&
+    !graphArray[row - 1][column].className.includes("beenThere") &&
     !graphArray[row - 1][column].isWall
   ) {
     let bottom = graphArray[row - 1][column];
@@ -54,7 +66,7 @@ function getNeighbors(row, column) {
   }
   if (
     column + 1 < numberOfColumns &&
-    !graphArray[row][column + 1].className.includes("searched") &&
+    !graphArray[row][column + 1].className.includes("beenThere") &&
     !graphArray[row][column + 1].isWall
   ) {
     let right = graphArray[row][column + 1];
@@ -64,7 +76,7 @@ function getNeighbors(row, column) {
   }
   if (
     row + 1 < numberOfRows &&
-    !graphArray[row + 1][column].className.includes("searched") &&
+    !graphArray[row + 1][column].className.includes("beenThere") &&
     !graphArray[row + 1][column].isWall
   ) {
     let top = graphArray[row + 1][column];
@@ -74,7 +86,7 @@ function getNeighbors(row, column) {
   }
   if (
     column - 1 > -1 &&
-    !graphArray[row][column - 1].className.includes("searched") &&
+    !graphArray[row][column - 1].className.includes("beenThere") &&
     !graphArray[row][column - 1].isWall
   ) {
     let left = graphArray[row][column - 1];
