@@ -53,7 +53,7 @@ function getDijkstrasNeighbors(row, column, checkState) {
     row + 1 < numberOfRows &&
     graphArray[row + 1][column].distanceTo >
       currentNode.distanceTo + graphArray[row + 1][column].weight &&
-    !graphArray[row + 1][column].isWall
+    !graphArray[row + 1][column].classList.contains("wall")
   ) {
     let top = graphArray[row + 1][column];
     neighbors.push(top);
@@ -65,7 +65,7 @@ function getDijkstrasNeighbors(row, column, checkState) {
     row - 1 > -1 &&
     graphArray[row - 1][column].distanceTo >
       currentNode.distanceTo + graphArray[row - 1][column].weight &&
-    !graphArray[row - 1][column].isWall
+    !graphArray[row - 1][column].classList.contains("wall")
   ) {
     let bottom = graphArray[row - 1][column];
     neighbors.push(bottom);
@@ -77,7 +77,7 @@ function getDijkstrasNeighbors(row, column, checkState) {
     column + 1 < numberOfColumns &&
     graphArray[row][column + 1].distanceTo >
       currentNode.distanceTo + graphArray[row][column + 1].weight &&
-    !graphArray[row][column + 1].isWall
+    !graphArray[row][column + 1].classList.contains("wall")
   ) {
     let right = graphArray[row][column + 1];
     neighbors.push(right);
@@ -89,7 +89,7 @@ function getDijkstrasNeighbors(row, column, checkState) {
     column - 1 > -1 &&
     graphArray[row][column - 1].distanceTo >
       currentNode.distanceTo + graphArray[row][column - 1].weight &&
-    !graphArray[row][column - 1].isWall
+    !graphArray[row][column - 1].classList.contains("wall")
   ) {
     let left = graphArray[row][column - 1];
     neighbors.push(left);

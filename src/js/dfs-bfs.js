@@ -1,4 +1,37 @@
 // implementation of bfs
+function breadthFirstSearchAnimate() {
+  if (timeoutArray.length > 0) {
+    stopAnimation();
+  }
+  if (alreadySearched) {
+    refreshGraph();
+  }
+  const queue = getNeighbors(beginningNode.row, beginningNode.column);
+  timeoutArray.push(
+    setTimeout(breadthFirstSearchAnimateStep, animationSpeed, queue)
+  );
+  alreadySearched = true;
+  lastSearchAlgorithm = "bfs";
+}
+function breadthFirstSearchAnimateStep(queue) {
+  if (queue.length !== 0) {
+    return;
+  }
+  if (currentNode.classList.contains("beenThere")) {
+    return;
+  }
+  currentNode.classList.add("beenThere");
+  if (currentNode === targetNode) {
+    return;
+  }
+  let currentArray = getNeighbors(currentNode.row, currentNode.column);
+  for (let i = 0; i < currentArray.length; i++) {
+    queue.push(currentArray[i]);
+  }
+  timeoutArray.push(
+    setTimeout(breadthFirstSearchAnimateStep, animationSpeed, queue)
+  );
+}
 function breadthFirstSearch() {
   if (timeoutArray.length > 0) {
     stopAnimation();
@@ -9,7 +42,7 @@ function breadthFirstSearch() {
   const queue = getNeighbors(beginningNode.row, beginningNode.column);
   while (queue.length !== 0) {
     let currentNode = queue.shift();
-    if (currentNode.className.includes("beenThere")) {
+    if (currentNode.classList.contains("beenThere")) {
       continue;
     }
     currentNode.classList.add("beenThere");
@@ -35,7 +68,7 @@ function depthFirstSearch() {
   const stack = getNeighbors(beginningNode.row, beginningNode.column);
   while (stack.length !== 0) {
     let currentNode = stack.pop();
-    if (currentNode.className.includes("beenThere")) {
+    if (currentNode.classList.contains("beenThere")) {
       continue;
     }
     currentNode.classList.add("beenThere");
@@ -56,8 +89,8 @@ function getNeighbors(row, column) {
   let currentNode = graphArray[row][column];
   if (
     row - 1 > -1 &&
-    !graphArray[row - 1][column].className.includes("beenThere") &&
-    !graphArray[row - 1][column].isWall
+    !graphArray[row - 1][column].classList.contains("beenThere") &&
+    !graphArray[row - 1][column].classList.contains("wall")
   ) {
     let bottom = graphArray[row - 1][column];
     neighbors.push(bottom);
@@ -66,8 +99,8 @@ function getNeighbors(row, column) {
   }
   if (
     column + 1 < numberOfColumns &&
-    !graphArray[row][column + 1].className.includes("beenThere") &&
-    !graphArray[row][column + 1].isWall
+    !graphArray[row][column + 1].classList.contains("beenThere") &&
+    !graphArray[row][column + 1].classList.contains("wall")
   ) {
     let right = graphArray[row][column + 1];
     neighbors.push(right);
@@ -76,8 +109,8 @@ function getNeighbors(row, column) {
   }
   if (
     row + 1 < numberOfRows &&
-    !graphArray[row + 1][column].className.includes("beenThere") &&
-    !graphArray[row + 1][column].isWall
+    !graphArray[row + 1][column].classList.contains("beenThere") &&
+    !graphArray[row + 1][column].classList.contains("wall")
   ) {
     let top = graphArray[row + 1][column];
     neighbors.push(top);
@@ -86,8 +119,8 @@ function getNeighbors(row, column) {
   }
   if (
     column - 1 > -1 &&
-    !graphArray[row][column - 1].className.includes("beenThere") &&
-    !graphArray[row][column - 1].isWall
+    !graphArray[row][column - 1].classList.contains("beenThere") &&
+    !graphArray[row][column - 1].classList.contains("wall")
   ) {
     let left = graphArray[row][column - 1];
     neighbors.push(left);

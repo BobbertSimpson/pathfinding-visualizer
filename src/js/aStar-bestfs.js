@@ -57,3 +57,21 @@ function getEuclidDistanceTo(node) {
     (node.row - targetNode.row) ** 2 + (node.column - targetNode.column) ** 2
   );
 }
+function bestFirstSearchComparator(node1, node2) {
+  if (node1 === "type") {
+    return "best";
+  }
+  const node1Manhattan = getManhattanDistanceTo(node1);
+  const node2Manhattan = getManhattanDistanceTo(node2);
+
+  if (node1Manhattan > node2Manhattan) {
+    return 1;
+  } else if (node1Manhattan === node2Manhattan) {
+    return 0;
+  } else {
+    return -1;
+  }
+}
+function bestFirstSearch() {
+  dijkstrasAlgorithm(bestFirstSearchComparator);
+}

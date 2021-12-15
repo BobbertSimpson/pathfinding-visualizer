@@ -16,14 +16,14 @@ let alreadySearched = false;
 let lastSearchAlgorithm = "";
 let timeoutArray = [];
 const distanceElement = document.getElementById("distance");
-
-// Activate the buttons
+let animationSpeed;
+// Add on click function calls
 document.getElementById("dijkstrasAlgorithm").addEventListener("click", () => {
   dijkstrasAlgorithm();
   showAnswerAnimate();
 });
 document.getElementById("breadthFirstSearch").addEventListener("click", () => {
-  breadthFirstSearch();
+  breadthFirstSearchAnimate();
   showAnswerAnimate();
 });
 document.getElementById("depthFirstSearch").addEventListener("click", () => {
@@ -41,6 +41,19 @@ document.getElementById("aStarEuclid").addEventListener("click", () => {
 document.getElementById("aStarManhattan").addEventListener("click", () => {
   aStarManhattan();
   showAnswerAnimate();
+});
+document.getElementById("bestFirstSearch").addEventListener("click", () => {
+  bestFirstSearch();
+  showAnswerAnimate();
+});
+document.getElementById("slow").addEventListener("click", () => {
+  animationSpeed = 100;
+});
+document.getElementById("medium").addEventListener("click", () => {
+  animationSpeed = 75;
+});
+document.getElementById("fast").addEventListener("click", () => {
+  animationSpeed = 50;
 });
 
 // Build the html graph and the two dimensional graphArray
@@ -65,6 +78,7 @@ function makeBeginningNode(node) {
   beginningNode.id = "beginningNode";
 }
 function refreshGraph(removeWalls = false) {
+  distanceElement.textContent = "";
   for (let row = 0; row < numberOfRows; row++) {
     for (let column = 0; column < numberOfColumns; column++) {
       refreshNode(row, column, removeWalls);
@@ -85,7 +99,6 @@ function refreshNode(row, column, removeWalls) {
   node.classList.remove("beenThere");
   node.classList.remove("pathAnimate");
   if (removeWalls) {
-    node.isWall = false;
     node.classList.remove("wall");
   }
 }
@@ -98,10 +111,9 @@ function constructNode(row, column) {
   node.column = column;
   node.weight = 1;
   node.setAttribute("class", "node");
-  node.isWall = false;
   graphElement.addEventListener("mouseleave", handleMouseLeave);
   node.addEventListener("mousedown", handleMouseDown);
-  node.addEventListener("mousemove", handleMouseMove);
+  node.addEventListener("mouseenter", handleMouseEnter);
   node.addEventListener("mouseup", handleMouseUp);
   if (row === beginningNodeRow && column === beginningNodeColumn) {
     makeBeginningNode(node);
@@ -126,7 +138,7 @@ function showAnswerImmediate() {
 }
 
 function showAnswerAnimate() {
-  if (targetNode.className.includes("searched")) {
+  if (targetNode.classList.contains("searched")) {
     let node = targetNode.from;
     let stack = [];
     while (node !== beginningNode) {

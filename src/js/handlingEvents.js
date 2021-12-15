@@ -1,48 +1,93 @@
 let movingBeginningNode = false;
 let movingTargetNode = false;
 let creatingWalls = false;
+let prevIsWall = false;
 
 function handleMouseDown(event) {
   event.preventDefault();
-  if (timeoutArray.length > 0) {
+  const node = event.target;
+  if (node === beginningNode) {
+    movingBeginningNode = true;
+  } else if (node === targetNode) {
+    movingTargetNode = true;
+  } else if (node.classList.contains("wall")) {
+    creatingWalls = true;
+    node.classList.remove("wall");
+  } else if (!node.classList.contains("wall")) {
+    creatingWalls = true;
+    node.classList.add("wall");
+  }
+  if (alreadySearched) {
     stopAnimation();
     runLastAlgorithm();
   }
-  if (event.target === beginningNode) {
-    movingBeginningNode = true;
-  } else if (event.target === targetNode) {
-    movingTargetNode = true;
-  } else {
-    creatingWalls = true;
-    event.target.isWall = true;
-    event.target.classList.add("wall");
-  }
 }
-function handleMouseMove(event) {
+function handleMouseEnter(event) {
   event.preventDefault();
-  if (movingTargetNode && event.target !== beginningNode) {
+  const node = event.target;
+  if (movingTargetNode && node !== beginningNode) {
     // dragging the target node
     targetNode.id = "";
-    event.target.id = "targetNode";
-    targetNode = event.target;
-    targetNode.isWall = false;
+    if (prevIsWall) {
+      targetNode.classList.add("wall");
+    }
+    node.id = "targetNode";
+    prevIsWall = node.classList.contains("wall");
+    targetNode = node;
+    // Stops being a wall so that the search algorithms can find it
+    targetNode.classList.remove("wall");
+    targetNode.classList.remove("wall");
     if (alreadySearched) {
       stopAnimation();
       runLastAlgorithm();
     }
-  } else if (movingBeginningNode && event.target !== targetNode) {
+  } else if (movingBeginningNode && node !== targetNode) {
     beginningNode.id = "";
-    event.target.id = "beginningNode";
-    beginningNode = event.target;
+    node.id = "beginningNode";
+    beginningNode = node;
     if (alreadySearched) {
       stopAnimation();
       runLastAlgorithm();
     }
   } else if (creatingWalls) {
-    event.target.isWall = true;
-    event.target.classList.add("wall");
+    if (node.classList.contains("wall")) {
+      node.classList.remove("wall");
+    } else {
+      node.classList.add("wall");
+    }
+    if (alreadySearched) {
+      runLastAlgorithm();
+    }
   }
 }
+
+// function handleMouseMove(event) {
+//   event.preventDefault();
+//   let node = event.target;
+//   if (movingTargetNode && node !== beginningNode) {
+//     // dragging the target node
+//     targetNode.id = "";
+//     node.id = "targetNode";
+//     targetNode = node;
+//     targetNode.isWall = false;
+//     if (alreadySearched) {
+//       stopAnimation();
+//       runLastAlgorithm();
+//     }
+//   } else if (movingBeginningNode && node !== targetNode) {
+//     beginningNode.id = "";
+//     node.id = "beginningNode";
+//     beginningNode = node;
+//     if (alreadySearched) {
+//       stopAnimation();
+//       runLastAlgorithm();
+//     }
+//   } else if (creatingWalls) {
+//     node.isWall = true;
+//     node.classList.add("wall");
+//   }
+// }
+
 function handleMouseLeave(event) {
   event.preventDefault();
   movingBeginningNode = false;
@@ -66,10 +111,14 @@ function runLastAlgorithm() {
     aStarManhattan();
   } else if (lastSearchAlgorithm === "euclid") {
     aStarEuclid();
+  } else if (lastSearchAlgorithm === "best") {
+    bestFirstSearch();
   } else {
     alert("Something is wrong");
   }
-  showAnswerImmediate();
+  if (targetNode.classList.contains("beenThere")) {
+    showAnswerImmediate();
+  }
 }
 // a somewhat hacky way to stop the animation of the path
 function stopAnimation() {

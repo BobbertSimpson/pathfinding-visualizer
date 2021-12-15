@@ -16,7 +16,11 @@
         src="src/js/handlingEvents.js"
         defer
       ></script>
-      <script type="text/javascript" src="src/js/aStar.js" defer></script>
+      <script
+        type="text/javascript"
+        src="src/js/aStar-bestfs.js"
+        defer
+      ></script>
       <script type="text/javascript" src="src/js/createGraph.js" defer></script>
       <link rel="stylesheet" type="text/css" href="src/style/style.css" />
     </header>
@@ -35,12 +39,20 @@
             <li id="depthFirstSearch"><a href="#">Deapth-first search</a></li>
             <li id="aStarManhattan"><a href="#">A* (Manhattan)</a></li>
             <li id="aStarEuclid"><a href="#">A* (Euclidean)</a></li>
+            <li id="bestFirstSearch"><a href="#">Best First Search</a></li>
           </ul>
         </li>
         <li><a href="#">Maze Algorithms</a></li>
         <li id="resetGraph"><a href="#">Clear Path</a></li>
         <li id="resetWalls"><a href="#">Clear Walls</a></li>
-        <li><a href="#">Speed</a></li>
+        <li>
+          <a href="#">Speed</a>
+          <ul>
+            <li id="fast"><a href="#">Fast</a></li>
+            <li id="medium"><a href="#">Medium</a></li>
+            <li id="slow"><a href="#">Slow</a></li>
+          </ul>
+        </li>
       </ul>
     </nav>
     <div id="distance"></div>
