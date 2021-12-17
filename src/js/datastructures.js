@@ -55,3 +55,25 @@ class minPriorityQueue {
     return this.index == 1;
   }
 }
+// https://code.iamkate.com/javascript/queues/
+function Queue() {
+  let queue = [],
+    bottomIndex = 0;
+  this.isEmpty = function () {
+    return 0 == queue.length;
+  };
+  this.enqueue = function (item) {
+    queue.push(item);
+  };
+  this.dequeue = function () {
+    if (0 != queue.length) {
+      var item = queue[bottomIndex];
+      2 * ++bottomIndex >= queue.length &&
+        ((queue = queue.slice(bottomIndex)), (bottomIndex = 0));
+      return item;
+    }
+  };
+  this.peek = function () {
+    return 0 < a.length ? a[b] : void 0;
+  };
+}

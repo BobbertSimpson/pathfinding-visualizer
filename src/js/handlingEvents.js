@@ -8,6 +8,7 @@ function handleMouseDown(event) {
   const node = event.target;
   if (node === beginningNode) {
     movingBeginningNode = true;
+    console.log("moving beginning");
   } else if (node === targetNode) {
     movingTargetNode = true;
   } else if (node.classList.contains("wall")) {
@@ -116,7 +117,10 @@ function runLastAlgorithm() {
   } else {
     alert("Something is wrong");
   }
-  if (targetNode.classList.contains("beenThere")) {
+  if (
+    targetNode.classList.contains("beenThere") ||
+    targetNode.classList.contains("beenThereAnimate")
+  ) {
     showAnswerImmediate();
   }
 }

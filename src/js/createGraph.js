@@ -3,10 +3,10 @@ const numberOfRows = 23;
 const numberOfColumns = 50;
 
 // original position of the beginning and end nodes
-let beginningNodeRow = Math.floor(numberOfRows / 3);
-let beginningNodeColumn = Math.floor(numberOfColumns / 6);
-let targetNodeColumn = Math.floor(numberOfColumns / 6) * 5;
-let targetNodeRow = Math.floor(numberOfRows / 3) * 2;
+let beginningNodeRow = Math.floor(numberOfRows / 2); // Math.floor(numberOfRows / 3);
+let beginningNodeColumn = Math.floor(numberOfColumns / 2) - 2; // Math.floor(numberOfColumns / 6);
+let targetNodeColumn = Math.floor(numberOfColumns / 2) + 2; // Math.floor(numberOfColumns / 6) * 5;
+let targetNodeRow = Math.floor(numberOfRows / 2); // Math.floor(numberOfRows / 3) * 2;
 
 const graphElement = document.getElementById("graph");
 const graphArray = [];
@@ -16,7 +16,7 @@ let alreadySearched = false;
 let lastSearchAlgorithm = "";
 let timeoutArray = [];
 const distanceElement = document.getElementById("distance");
-let animationSpeed;
+let animationSpeed = 50;
 // Add on click function calls
 document.getElementById("dijkstrasAlgorithm").addEventListener("click", () => {
   dijkstrasAlgorithm();
@@ -24,10 +24,9 @@ document.getElementById("dijkstrasAlgorithm").addEventListener("click", () => {
 });
 document.getElementById("breadthFirstSearch").addEventListener("click", () => {
   breadthFirstSearchAnimate();
-  showAnswerAnimate();
 });
 document.getElementById("depthFirstSearch").addEventListener("click", () => {
-  depthFirstSearch();
+  depthFirstSearchAnimate();
   showAnswerAnimate();
 });
 document.getElementById("resetGraph").addEventListener("click", refreshGraph);
@@ -98,6 +97,7 @@ function refreshNode(row, column, removeWalls) {
   node.classList.remove("path");
   node.classList.remove("beenThere");
   node.classList.remove("pathAnimate");
+  node.classList.remove("beenThereAnimate");
   if (removeWalls) {
     node.classList.remove("wall");
   }
@@ -138,19 +138,18 @@ function showAnswerImmediate() {
 }
 
 function showAnswerAnimate() {
-  if (targetNode.classList.contains("searched")) {
-    let node = targetNode.from;
-    let stack = [];
-    while (node !== beginningNode) {
-      stack.push(node);
-      node = node.from;
-    }
-    timeoutArray.push(setTimeout(animateStep, 75, stack));
-    // resetting the distance to zero
-    distance = 0;
-  } else {
+  if (targetNode.from === undefined) {
     return;
   }
+  let node = targetNode.from;
+  let stack = [];
+  while (node !== beginningNode) {
+    stack.push(node);
+    node = node.from;
+  }
+  timeoutArray.push(setTimeout(animateStep, 75, stack));
+  // resetting the distance to zero
+  distance = 0;
 }
 let counter = 0;
 function animateStep(stack, distance = 0) {
