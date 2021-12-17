@@ -3,7 +3,7 @@ const numberOfRows = 23;
 const numberOfColumns = 50;
 
 // original position of the beginning and end nodes
-let beginningNodeRow = Math.floor(numberOfRows / 2); // Math.floor(numberOfRows / 3);
+let beginningNodeRow = Math.floor(numberOfRows / 2) + 1; // Math.floor(numberOfRows / 3);
 let beginningNodeColumn = Math.floor(numberOfColumns / 2) - 2; // Math.floor(numberOfColumns / 6);
 let targetNodeColumn = Math.floor(numberOfColumns / 2) + 2; // Math.floor(numberOfColumns / 6) * 5;
 let targetNodeRow = Math.floor(numberOfRows / 2); // Math.floor(numberOfRows / 3) * 2;
@@ -19,8 +19,7 @@ const distanceElement = document.getElementById("distance");
 let animationSpeed = 50;
 // Add on click function calls
 document.getElementById("dijkstrasAlgorithm").addEventListener("click", () => {
-  dijkstrasAlgorithm();
-  showAnswerAnimate();
+  dijkstrasAlgorithmAnimated();
 });
 document.getElementById("breadthFirstSearch").addEventListener("click", () => {
   breadthFirstSearchAnimate();
@@ -34,16 +33,13 @@ document.getElementById("resetWalls").addEventListener("click", () => {
   refreshGraph(true);
 });
 document.getElementById("aStarEuclid").addEventListener("click", () => {
-  aStarEuclid();
-  showAnswerAnimate();
+  aStarEuclidAnimated();
 });
 document.getElementById("aStarManhattan").addEventListener("click", () => {
-  aStarManhattan();
-  showAnswerAnimate();
+  aStarManhattanAnimated();
 });
 document.getElementById("bestFirstSearch").addEventListener("click", () => {
-  bestFirstSearch();
-  showAnswerAnimate();
+  bestFirstSearchAnimated();
 });
 document.getElementById("slow").addEventListener("click", () => {
   animationSpeed = 100;

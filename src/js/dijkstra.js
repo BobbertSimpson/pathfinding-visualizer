@@ -1,3 +1,37 @@
+function dijkstrasAlgorithmAnimated(comparator = dijkstrasComparator) {
+  if (timeoutArray.length > 0) {
+    stopAnimation();
+  }
+  if (alreadySearched) {
+    refreshGraph();
+  }
+  const dijkstrasPQ = new minPriorityQueue(comparator);
+  beginningNode.distanceTo = 0;
+  startArray = getDijkstrasNeighbors(beginningNode);
+  console.log(startArray);
+  for (let i = 0; i < startArray.length; i++) {
+    dijkstrasPQ.enqueueElement(startArray[i]);
+  }
+  timeoutArray.push(setTimeout(dijkstraAlgorithmAnimateStep, 1, dijkstrasPQ));
+
+  alreadySearched = true;
+  lastSearchAlgorithm = comparator("type");
+}
+
+function dijkstraAlgorithmAnimateStep(dijkstrasPQ) {
+  const currentNode = dijkstrasPQ.dequeue();
+  currentNode.classList.add("beenThere");
+  if (currentNode === targetNode) {
+    showAnswerAnimate();
+    return;
+  }
+  let currentArray = getDijkstrasNeighbors(currentNode);
+  for (let i = 0; i < currentArray.length; i++) {
+    dijkstrasPQ.enqueueElement(currentArray[i]);
+  }
+  timeoutArray.push(setTimeout(dijkstraAlgorithmAnimateStep, 1, dijkstrasPQ));
+}
+
 // implementation of dijkstras' algorithm
 function dijkstrasAlgorithm(comparator = dijkstrasComparator) {
   if (timeoutArray.length > 0) {
@@ -8,7 +42,7 @@ function dijkstrasAlgorithm(comparator = dijkstrasComparator) {
   }
   const dijkstrasPQ = new minPriorityQueue(comparator);
   beginningNode.distanceTo = 0;
-  startArray = getDijkstrasNeighbors(beginningNode.row, beginningNode.column);
+  startArray = getDijkstrasNeighbors(beginningNode);
   console.log(startArray);
   for (let i = 0; i < startArray.length; i++) {
     dijkstrasPQ.enqueueElement(startArray[i]);
@@ -20,10 +54,7 @@ function dijkstrasAlgorithm(comparator = dijkstrasComparator) {
     if (currentNode === targetNode) {
       break;
     }
-    let currentArray = getDijkstrasNeighbors(
-      currentNode.row,
-      currentNode.column
-    );
+    let currentArray = getDijkstrasNeighbors(currentNode);
     for (let i = 0; i < currentArray.length; i++) {
       dijkstrasPQ.enqueueElement(currentArray[i]);
     }
@@ -45,9 +76,10 @@ function dijkstrasComparator(node1, node2) {
   }
 }
 // finds the neighbors for dijkstras' algorithm
-function getDijkstrasNeighbors(row, column, checkState) {
+function getDijkstrasNeighbors(currentNode) {
   let neighbors = [];
-  const currentNode = graphArray[row][column];
+  const row = currentNode.row;
+  const column = currentNode.column;
   // Every if statement checks whether the neighbor exists and that it's not a wall and that the path to it is the shortest path
   if (
     row + 1 < numberOfRows &&

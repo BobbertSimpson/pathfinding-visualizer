@@ -2,9 +2,15 @@
 function aStarManhattan() {
   dijkstrasAlgorithm(aStarManhattanComparator);
 }
+function aStarManhattanAnimated() {
+  dijkstrasAlgorithmAnimated(aStarManhattanComparator);
+}
 // Implementation of A* (Euclidean)
 function aStarEuclid() {
   dijkstrasAlgorithm(aStarEuclidComparator);
+}
+function aStarEuclidAnimated() {
+  dijkstrasAlgorithmAnimated(aStarEuclidComparator);
 }
 // a comparator for A* (Euclidean)
 function aStarEuclidComparator(node1, node2) {
@@ -20,6 +26,23 @@ function aStarEuclidComparator(node1, node2) {
     node1.distanceTo + getEuclidDistanceTo(node1) ===
     node2.distanceTo + getEuclidDistanceTo(node2)
   ) {
+    if (getEuclidDistanceTo(node1) > getEuclidDistanceTo(node2)) {
+      return 1;
+    } else if (getEuclidDistanceTo(node1) < getEuclidDistanceTo(node2)) {
+      return -1;
+    } else {
+      if (
+        Math.abs(node1.row - targetNode.row) <
+        Math.abs(node2.row - targetNode.row)
+      ) {
+        return 1;
+      } else if (
+        Math.abs(node1.row - targetNode.row) >
+        Math.abs(node2.row - targetNode.row)
+      ) {
+        return -1;
+      }
+    }
     return 0;
   } else {
     return -1;
@@ -39,6 +62,23 @@ function aStarManhattanComparator(node1, node2) {
     node1.distanceTo + getManhattanDistanceTo(node1) ===
     node2.distanceTo + getManhattanDistanceTo(node2)
   ) {
+    if (getManhattanDistanceTo(node1) > getManhattanDistanceTo(node2)) {
+      return 1;
+    } else if (getManhattanDistanceTo(node1) < getManhattanDistanceTo(node2)) {
+      return -1;
+    } else {
+      if (
+        Math.abs(node1.row - targetNode.row) <
+        Math.abs(node2.row - targetNode.row)
+      ) {
+        return 1;
+      } else if (
+        Math.abs(node1.row - targetNode.row) >
+        Math.abs(node2.row - targetNode.row)
+      ) {
+        return -1;
+      }
+    }
     return 0;
   } else {
     return -1;
@@ -74,4 +114,7 @@ function bestFirstSearchComparator(node1, node2) {
 }
 function bestFirstSearch() {
   dijkstrasAlgorithm(bestFirstSearchComparator);
+}
+function bestFirstSearchAnimated() {
+  dijkstrasAlgorithmAnimated(bestFirstSearchComparator);
 }
